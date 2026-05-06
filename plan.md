@@ -1,76 +1,30 @@
-## Project Plan: Electronic Components Dropshipping Platform
+## Plan: Electronic Components Dropshipping Platform
 
-**Phase 1: Project Setup & Core Frontend**
+**Goal:** Implement user authentication (sign-in/sign-up) and order management system.
 
-1.  **Initialize Next.js Project:** Set up a new Next.js project with TypeScript.
-2.  **UI Framework & Styling:** Integrate Tailwind CSS for styling. Define a design system inspired by Digi-Key/Mouser (color palette, typography, spacing).
-3.  **Component Library:** Set up a component library (e.g., Shadcn/ui) for reusable UI elements.
-4.  **Basic Layout:** Implement the main application layout, including header, footer, and navigation.
-5.  **Homepage:** Create a responsive homepage with a search bar and featured categories/products.
-6.  **Product Listing Page:** Develop a page to display products with basic filtering and sorting.
-7.  **Product Detail Page:** Create a page for individual product details, including description, specs, and an "Add to Cart" button.
-8.  **Cart Page:** Implement a functional shopping cart.
-9.  **Checkout Flow (Basic):** Set up a multi-step checkout process (shipping, payment).
-10. **Authentication UI:** Implement basic UI for login, registration, and password reset.
+**Features to Implement:**
+1.  **User Authentication:**
+    *   Create `SignInForm.tsx` and `SignUpForm.tsx` components.
+    *   Implement routing for authentication pages.
+    *   Integrate JWT-based authentication logic (mocked initially) with role support (admin, customer, supplier).
+    *   Update Navbar to include account/auth links.
+2.  **Order Management:**
+    *   Create checkout components.
+    *   Implement order creation from the cart.
+    *   Integrate mock supplier API for order routing.
+    *   Develop order status tracking (processing, shipped, delivered).
+    *   Create order history display and admin/supplier views.
+    *   Update routing for order-related pages.
 
-**Phase 2: Backend & Database Setup**
+**Preserve:** Existing UI components for product display, Hero, Navbar, Footer layout, mock data, and cart persistence logic.
 
-1.  **Node.js Backend:** Set up a Node.js backend (e.g., NestJS) with the chosen framework.
-2.  **Database Setup (PostgreSQL):**
-    *   Define database schema for: Products, Categories, Users, Roles, Orders, Suppliers, etc.
-    *   Set up PostgreSQL and connect the backend application.
-    *   Implement basic CRUD operations for core entities.
-3.  **Authentication Implementation:**
-    *   Implement JWT-based authentication.
-    *   Define user roles (admin, customer, supplier) and permissions.
-    *   Secure API endpoints based on roles.
-4.  **API Development:**
-    *   Develop APIs for product management, user management, cart, and orders.
+**Technical Notes:**
+*   Focus on functional flows, using mock data and placeholder backend logic.
+*   Ensure UI consistency and responsiveness.
 
-**Phase 3: Core Features Integration**
-
-1.  **Product Catalog Enhancement:**
-    *   Implement advanced filtering (price, brand, specs).
-    *   Integrate real-time stock syncing (start with mock API).
-2.  **Dropshipping Logic:**
-    *   Develop the supplier abstraction layer.
-    *   Implement order routing to supplier APIs.
-    *   Implement order status tracking.
-3.  **Payment Integration:**
-    *   Integrate Stripe and PayPal for payment processing.
-    *   Handle payment success and failure callbacks.
-4.  **User System Implementation:**
-    *   Customer accounts with order history.
-    *   Admin dashboard for managing products, suppliers, and orders.
-    *   Supplier portal (basic functionality).
-
-**Phase 4: Advanced Features & Optimization**
-
-1.  **Supplier API Integration:** Integrate with a real supplier API if feasible, or enhance the mock API.
-2.  **Bulk Order Upload:** Implement CSV bulk order upload functionality.
-3.  **Wishlist & Saved Components:** Implement wishlist and component saving features.
-4.  **Datasheet Preview:** Integrate a PDF viewer for component datasheets.
-5.  **SEO & Performance Optimization:**
-    *   Implement Server-Side Rendering (SSR) effectively.
-    *   Optimize product pages for speed and SEO.
-    *   Implement caching strategies.
-6.  **Shipping Cost Calculation:** Integrate a shipping cost calculation API.
-7.  **Multi-currency Support:** Implement multi-currency display and checkout.
-
-**Phase 5: Deployment & Documentation**
-
-1.  **Dockerization:** Create Dockerfile and docker-compose.yml for the application.
-2.  **Environment Configuration:** Set up `.env` files for development and production.
-3.  **API Documentation:** Generate API documentation (e.g., using Swagger/OpenAPI).
-4.  **Setup Instructions:** Create clear setup and deployment instructions.
-5.  **Testing & Refinement:** Conduct thorough testing and refine based on feedback.
-
-**Tools & Technologies:**
-*   Frontend: Next.js, React, Tailwind CSS, Shadcn/ui
-*   Backend: Node.js, NestJS (or Express)
-*   Database: PostgreSQL
-*   Authentication: JWT
-*   Payment: Stripe, PayPal
-*   Deployment: Docker
-
-This plan is subject to change based on development progress and feedback.
+**Next Steps:**
+1.  Begin with frontend implementation for authentication forms and routing.
+2.  Develop the checkout and order management components.
+3.  Integrate placeholder backend logic for authentication and order processing.
+4.  Refine UI/UX and ensure all links and navigation work as expected.
+5.  Validate the complete build.
