@@ -1,30 +1,31 @@
-## Plan: Electronic Components Dropshipping Platform
+## Revised Plan: Electronic Components Dropshipping Platform - Phase 2
 
-**Goal:** Implement user authentication (sign-in/sign-up) and order management system.
+**Goal:** Implement User Authentication, Order Management, and Refined Checkout Flow.
 
-**Features to Implement:**
-1.  **User Authentication:**
-    *   Create `SignInForm.tsx` and `SignUpForm.tsx` components.
-    *   Implement routing for authentication pages.
-    *   Integrate JWT-based authentication logic (mocked initially) with role support (admin, customer, supplier).
-    *   Update Navbar to include account/auth links.
-2.  **Order Management:**
-    *   Create checkout components.
-    *   Implement order creation from the cart.
-    *   Integrate mock supplier API for order routing.
-    *   Develop order status tracking (processing, shipped, delivered).
-    *   Create order history display and admin/supplier views.
-    *   Update routing for order-related pages.
+**1. Authentication Module:**
+- Create `src/lib/auth.ts` to manage mock authentication state (JWT-like behavior).
+- Create `src/pages/auth/SignIn.tsx` and `src/pages/auth/SignUp.tsx` with shadcn forms.
+- Update `src/components/layout/Navbar.tsx` to handle authenticated state and links.
 
-**Preserve:** Existing UI components for product display, Hero, Navbar, Footer layout, mock data, and cart persistence logic.
+**2. Order Management Module:**
+- Update `src/lib/mock-data.ts` to include sample order data.
+- Create `src/pages/account/OrderHistory.tsx` to list previous orders.
+- Create `src/pages/account/OrderDetail.tsx` for viewing specific order details.
 
-**Technical Notes:**
-*   Focus on functional flows, using mock data and placeholder backend logic.
-*   Ensure UI consistency and responsiveness.
+**3. Checkout Flow:**
+- Create `src/pages/checkout/Checkout.tsx` as a multi-step component (Shipping Address, Payment Method, Review & Place Order).
+- Integrate mock Stripe/PayPal UI elements.
+- Implement order placement logic (saving to mock history and clearing cart).
 
-**Next Steps:**
-1.  Begin with frontend implementation for authentication forms and routing.
-2.  Develop the checkout and order management components.
-3.  Integrate placeholder backend logic for authentication and order processing.
-4.  Refine UI/UX and ensure all links and navigation work as expected.
-5.  Validate the complete build.
+**4. Supplier Abstraction Layer:**
+- Create `src/lib/suppliers/index.ts` to define the `SupplierAdapter` interface and a mock `DigiKeyAdapter`.
+- Outline the structure for automated order routing.
+
+**5. Routing & Integration:**
+- Update `src/App.tsx` to include new routes: `/login`, `/register`, `/checkout`, `/orders`, `/order/:id`.
+- Ensure responsive design and accessibility across all new pages.
+
+**Technical Stack Updates:**
+- Use `sonner` for notifications.
+- Use `framer-motion` for smooth transitions between checkout steps.
+- Use `lucide-react` for iconography.

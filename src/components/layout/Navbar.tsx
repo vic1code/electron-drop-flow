@@ -1,14 +1,17 @@
-import React, { useState } from 'react';
-import { Search, ShoppingCart, User, Menu, X, ChevronDown, Package } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Search, ShoppingCart, User, Menu, X, ChevronDown, Package, LogOut, UserCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { categories } from '@/lib/mock-data';
+import { getCurrentUser, logout } from '@/lib/auth';
+import { User as UserType } from '@/types';
 
 interface NavbarProps {
   cartCount: number;
@@ -19,10 +22,21 @@ interface NavbarProps {
 export const Navbar: React.FC<NavbarProps> = ({ cartCount, onNavigate, onSearch }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [user, setUser] = useState<UserType | null>(null);
+
+  useEffect(() => {
+    setUser(getCurrentUser());
+  }, []);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     onSearch(searchQuery);
+  };
+
+  const handleLogout = () => {
+    logout();
+    setUser(null);
+    onNavigate('home');
   };
 
   return (
@@ -62,7 +76,7 @@ export const Navbar: React.FC<NavbarProps> = ({ cartCount, onNavigate, onSearch 
                 ))}
               </DropdownMenuContent>
             </DropdownMenu>
-            <Button variant="ghost" onClick={() => onNavigate('orders')}>Orders</Button>
+            
             <Button variant="ghost" size="icon" className="relative" onClick={() => onNavigate('cart')}>
               <ShoppingCart className="h-5 w-5" />
               {cartCount > 0 && (
@@ -71,7 +85,30 @@ export const Navbar: React.FC<NavbarProps> = ({ cartCount, onNavigate, onSearch 
                 </span>
               )}
             </Button>
-            <Button variant="outline" onClick={() => onNavigate('login')}>Sign In</Button>
+
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="flex items-center gap-2">
+                    <UserCircle className="h-5 w-5" />
+                    <span className="max-w-[100px] truncate font-medium">{user.name}</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuItem onClick={() => onNavigate('orders')}>My Orders</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => onNavigate('profile')}>Profile</DropdownMenuItem>
+                  {user.role === 'admin' && (
+                    <DropdownMenuItem onClick={() => onNavigate('admin')}>Admin Dashboard</DropdownMenuItem>
+                  )}
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive">
+                    <LogOut className="h-4 w-4 mr-2" /> Log Out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Button variant="outline" onClick={() => onNavigate('login')}>Sign In</Button>
+            )}
           </div>
 
           <div className="flex md:hidden items-center gap-2">
@@ -119,8 +156,14 @@ export const Navbar: React.FC<NavbarProps> = ({ cartCount, onNavigate, onSearch 
               </Button>
             ))}
             <div className="pt-2 border-t">
-              <Button variant="ghost" className="w-full justify-start" onClick={() => onNavigate('orders')}>Order History</Button>
-              <Button variant="ghost" className="w-full justify-start" onClick={() => onNavigate('login')}>Sign In</Button>
+              {user ? (
+                <>
+                  <Button variant="ghost" className="w-full justify-start" onClick={() => onNavigate('orders')}>My Orders</Button>
+                  <Button variant="ghost" className="w-full justify-start text-destructive hover:text-destructive" onClick={handleLogout}>Log Out</Button>
+                </>
+              ) : (
+                <Button variant="ghost" className="w-full justify-start" onClick={() => onNavigate('login')}>Sign In</Button>
+              )}
             </div>
           </div>
         </div>

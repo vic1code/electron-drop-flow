@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Toaster } from 'sonner';
 import { Navbar } from './components/layout/Navbar';
 import { Footer } from './components/layout/Footer';
@@ -6,26 +6,51 @@ import { Hero } from './components/home/Hero';
 import { CategoryGrid } from './components/home/CategoryGrid';
 import { ProductCard } from './components/products/ProductCard';
 import { useCart } from './hooks/useCart';
-import { products, categories } from './lib/mock-data';
-import { ShoppingCart, Trash2, Plus, Minus, CreditCard, ChevronRight, Package } from 'lucide-react';
+import { products, categories, mockOrders } from './lib/mock-data';
+import { ShoppingCart, Trash2, Plus, Minus, CreditCard, ChevronRight, Package, ArrowRight } from 'lucide-react';
 import { Button } from './components/ui/button';
 import { Card, CardContent } from './components/ui/card';
 import { Separator } from './components/ui/separator';
+import { SignIn } from './pages/auth/SignIn';
+import { SignUp } from './pages/auth/SignUp';
+import { Checkout } from './pages/checkout/Checkout';
+import { OrderHistory } from './pages/account/OrderHistory';
+import { OrderDetail } from './pages/account/OrderDetail';
+import { getCurrentUser } from './lib/auth';
+import { Order, User } from './types';
 
 function App() {
   const [currentPage, setCurrentPage] = useState('home');
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
-  const { items, addItem, removeItem, updateQuantity, total, cartCount } = useCart();
+  const [user, setUser] = useState<User | null>(null);
+  const [orders, setOrders] = useState<Order[]>(mockOrders);
+  const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
+  
+  const { items, addItem, removeItem, updateQuantity, total, cartCount, clearCart } = useCart();
+
+  useEffect(() => {
+    setUser(getCurrentUser());
+  }, [currentPage]);
 
   const handleNavigate = (page: string) => {
     if (page.startsWith('category-')) {
       const slug = page.replace('category-', '');
       setActiveCategory(slug);
       setCurrentPage('category');
+    } else if (page.startsWith('order-')) {
+      const id = page.replace('order-', '');
+      setSelectedOrderId(id);
+      setCurrentPage('order-detail');
     } else {
       setCurrentPage(page);
     }
     window.scrollTo(0, 0);
+  };
+
+  const handleCheckoutComplete = (orderData: Order) => {
+    setOrders([orderData, ...orders]);
+    clearCart();
+    handleNavigate('orders');
   };
 
   const filteredProducts = activeCategory 
@@ -63,7 +88,7 @@ function App() {
         return (
           <div className="container mx-auto px-4 py-8">
             <div className="flex items-center gap-2 mb-8 text-sm text-muted-foreground">
-              <span className="hover:text-primary cursor-pointer" onClick={() => setCurrentPage('home')}>Home</span>
+              <span className="hover:text-primary cursor-pointer" onClick={() => handleNavigate('home')}>Home</span>
               <ChevronRight className="h-4 w-4" />
               <span className="font-semibold text-foreground">{cat?.name}</span>
             </div>
@@ -79,16 +104,6 @@ function App() {
                         {['$0 - $10', '$10 - $50', '$50 - $100', '$100+'].map(range => (
                           <label key={range} className="flex items-center gap-2 text-sm">
                             <input type="checkbox" className="rounded border-muted" /> {range}
-                          </label>
-                        ))}
-                      </div>
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold mb-2">Brand</p>
-                      <div className="space-y-2">
-                        {['Microchip', 'Bosch', 'ON Semi', 'STMicro'].map(brand => (
-                          <label key={brand} className="flex items-center gap-2 text-sm">
-                            <input type="checkbox" className="rounded border-muted" /> {brand}
                           </label>
                         ))}
                       </div>
@@ -124,7 +139,7 @@ function App() {
                 <Package className="h-16 w-16 mx-auto text-muted-foreground mb-4 opacity-50" />
                 <h3 className="text-xl font-semibold mb-2">Your cart is empty</h3>
                 <p className="text-muted-foreground mb-8">Looks like you haven't added any components yet.</p>
-                <Button onClick={() => setCurrentPage('home')}>Continue Sourcing</Button>
+                <Button onClick={() => handleNavigate('home')}>Continue Sourcing</Button>
               </div>
             ) : (
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
@@ -184,12 +199,13 @@ function App() {
                           <span className="text-primary">${(total + 12.50 + total * 0.08).toFixed(2)}</span>
                         </div>
                       </div>
-                      <Button className="w-full mt-6 h-12 text-base gap-2" size="lg">
-                        <CreditCard className="h-5 w-5" /> Secure Checkout
+                      <Button 
+                        className="w-full mt-6 h-12 text-base gap-2" 
+                        size="lg" 
+                        onClick={() => user ? handleNavigate('checkout') : handleNavigate('login')}
+                      >
+                        <CreditCard className="h-5 w-5" /> {user ? 'Secure Checkout' : 'Sign in to Checkout'}
                       </Button>
-                      <p className="text-[10px] text-center text-muted-foreground mt-4">
-                        Taxes and shipping calculated at checkout. Multi-currency supported via Stripe/PayPal.
-                      </p>
                     </CardContent>
                   </Card>
                 </div>
@@ -197,6 +213,25 @@ function App() {
             )}
           </div>
         );
+
+      case 'login':
+        return <SignIn onSuccess={() => handleNavigate('home')} onNavigate={handleNavigate} />;
+      
+      case 'register':
+        return <SignUp onSuccess={() => handleNavigate('home')} onNavigate={handleNavigate} />;
+
+      case 'checkout':
+        if (!user) return <SignIn onSuccess={() => handleNavigate('checkout')} onNavigate={handleNavigate} />;
+        return <Checkout items={items} total={total} onComplete={handleCheckoutComplete} onNavigate={handleNavigate} />;
+
+      case 'orders':
+        if (!user) return <SignIn onSuccess={() => handleNavigate('orders')} onNavigate={handleNavigate} />;
+        return <OrderHistory orders={orders} onViewOrder={(id) => handleNavigate(`order-${id}`)} />;
+
+      case 'order-detail':
+        const order = orders.find(o => o.id === selectedOrderId);
+        if (!order) return <div>Order not found</div>;
+        return <OrderDetail order={order} onBack={() => handleNavigate('orders')} />;
 
       default:
         return <div className="container mx-auto px-4 py-20 text-center">Page Under Construction</div>;

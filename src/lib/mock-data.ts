@@ -1,4 +1,4 @@
-import { Product, Category } from '../types';
+import { Product, Category, Order } from '../types';
 
 export const categories: Category[] = [
   {
@@ -100,7 +100,7 @@ export const products: Product[] = [
       'Interface': 'I2C, SPI',
       'Voltage - Supply': '1.71 V ~ 3.6 V',
       'Output Type': 'Digital',
-      'Operating Temperature': '-40°C ~ 85°C'
+      'Operating Temperature': '-40\u00b0C ~ 85\u00b0C'
     },
     rating: 4.7,
     reviewsCount: 230
@@ -125,5 +125,29 @@ export const products: Product[] = [
     },
     rating: 4.5,
     reviewsCount: 540
+  }
+];
+
+export const mockOrders: Order[] = [
+  {
+    id: 'ORD-12345',
+    createdAt: new Date().toISOString(),
+    status: 'shipped',
+    total: 45.90,
+    paymentMethod: 'stripe',
+    trackingNumber: 'TRACK-998877',
+    shippingAddress: {
+      fullName: 'John Doe',
+      email: 'john@example.com',
+      street: '123 Tech Lane',
+      city: 'San Francisco',
+      state: 'CA',
+      zip: '94105',
+      country: 'USA'
+    },
+    items: [
+      { ...products[0], quantity: 10 },
+      { ...products[2], quantity: 5 }
+    ]
   }
 ];

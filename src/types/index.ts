@@ -29,11 +29,31 @@ export interface CartItem extends Product {
 
 export type OrderStatus = 'processing' | 'shipped' | 'delivered' | 'cancelled';
 
+export interface Address {
+  fullName: string;
+  email: string;
+  street: string;
+  city: string;
+  state: string;
+  zip: string;
+  country: string;
+}
+
 export interface Order {
   id: string;
   items: CartItem[];
   total: number;
   status: OrderStatus;
   createdAt: string;
-  shippingAddress: string;
+  shippingAddress: Address;
+  paymentMethod: 'stripe' | 'paypal';
+  trackingNumber?: string;
+}
+
+export interface User {
+  id: string;
+  email: string;
+  name: string;
+  role: 'customer' | 'admin' | 'supplier';
+  avatar?: string;
 }
